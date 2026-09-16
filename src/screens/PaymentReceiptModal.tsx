@@ -1,0 +1,125 @@
+import React from 'react';
+import { X, CheckCircle2, Share2, Printer, ShieldCheck, Building2 } from 'lucide-react';
+import { PaymentReceipt } from '../types';
+
+interface PaymentReceiptModalProps {
+  receipt: PaymentReceipt;
+  onDismiss: () => void;
+}
+
+export const PaymentReceiptModal: React.FC<PaymentReceiptModalProps> = ({ receipt, onDismiss }) => {
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Tower 3 HD Oil Housing Receipt - ${receipt.transactionRef}`,
+        text: `Payment Receipt for Unit ${receipt.flatNumber} (${receipt.residentName})\nMonth: ${receipt.billingMonth}\nAmount Paid: ₹${receipt.amount.toFixed(2)}\nTxn: ${receipt.transactionRef}\nDate: ${receipt.date}`
+      }).catch(() => {});
+    } else {
+      alert(`Receipt Details:\nTxn: ${receipt.transactionRef}\nUnit: ${receipt.flatNumber}\nAmount: ₹${receipt.amount.toFixed(2)}`);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      <div className="w-full max-w-[390px] bg-white rounded-3xl shadow-ios-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-neutral-200">
+        {/* Receipt Header (Dark Green) */}
+        <div className="bg-gradient-to-b from-oil-dark to-oil-green text-white p-5 text-center relative">
+          <button
+            onClick={onDismiss}
+            className="absolute top-4 right-4 p-1 rounded-full bg-white/10 hover:bg-white/20 text-white/80 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mx-auto mb-2 shadow-inner">
+            <Building2 className="w-6 h-6 text-oil-gold" />
+          </div>
+          <h2 className="text-base font-bold text-white tracking-tight">Tower 3 HD Oil Housing</h2>
+          <p className="text-[11px] text-emerald-200/80">Oil India Limited • Duliajan, Assam</p>
+          <span className="inline-block mt-2 text-[10px] uppercase font-bold tracking-wider text-emerald-300 bg-emerald-900/60 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+            Official Payment Receipt
+          </span>
+        </div>
+
+        {/* Receipt Body */}
+        <div className="p-5 space-y-4 text-xs">
+          {/* Status Badge */}
+          <div className="flex items-center justify-center space-x-2 bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-emerald-800">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div className="text-left">
+              <span className="font-bold text-xs block">Payment Successful & Settled</span>
+              <span className="text-[10px] text-emerald-700">Ref: {receipt.transactionRef}</span>
+            </div>
+          </div>
+
+          {/* Key-Value Details */}
+          <div className="bg-neutral-50 rounded-2xl p-3.5 space-y-2 border border-neutral-200/80">
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Flat Number:</span>
+              <span className="font-bold text-neutral-900">Unit {receipt.flatNumber}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Resident:</span>
+              <span className="font-semibold text-neutral-800">{receipt.residentName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Billing Cycle:</span>
+              <span className="font-semibold text-neutral-800">{receipt.billingMonth}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Payment Gateway:</span>
+              <span className="font-semibold text-neutral-800 text-right truncate max-w-[180px]">
+                {receipt.paymentMethod}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Date & Time:</span>
+              <span className="font-medium text-neutral-700">{receipt.date}</span>
+            </div>
+
+            <div className="pt-2 border-t border-neutral-200/80 flex justify-between items-baseline">
+              <span className="font-bold text-neutral-900 text-sm">Total Paid:</span>
+              <span className="font-extrabold text-oil-green text-base">
+                ₹{receipt.amount.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {/* Verification stamp notice */}
+          <div className="flex items-center space-x-2 text-[10px] text-neutral-500 bg-neutral-100/70 p-2.5 rounded-xl border border-neutral-200/60">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Digital stamp generated by Tower 3 Society Management Committee. No physical signature required.</span>
+          </div>
+        </div>
+
+        {/* Receipt Actions */}
+        <div className="p-4 bg-neutral-50 border-t border-neutral-100 flex space-x-2">
+          <button
+            onClick={handleShare}
+            className="flex-1 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-800 font-semibold text-xs flex items-center justify-center space-x-1.5 hover:bg-neutral-100 active:scale-95 transition-all shadow-2xs"
+          >
+            <Share2 className="w-3.5 h-3.5 text-neutral-600" />
+            <span>Share</span>
+          </button>
+          <button
+            onClick={handlePrint}
+            className="flex-1 py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-800 font-semibold text-xs flex items-center justify-center space-x-1.5 hover:bg-neutral-100 active:scale-95 transition-all shadow-2xs"
+          >
+            <Printer className="w-3.5 h-3.5 text-neutral-600" />
+            <span>Print</span>
+          </button>
+          <button
+            onClick={onDismiss}
+            className="flex-1 py-2.5 rounded-xl bg-oil-green text-white font-bold text-xs flex items-center justify-center hover:bg-oil-forest active:scale-95 transition-all shadow-xs"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
