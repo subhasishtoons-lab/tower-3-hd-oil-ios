@@ -1,0 +1,32 @@
+workflows:
+  ios-tower3:
+    name: Tower 3 HD Oil iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    environment:
+      xcode: latest
+      node: latest
+
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm ci
+
+      - name: Build React application
+        script: |
+          npm run build
+
+      - name: Sync Capacitor iOS project
+        script: |
+          npx cap sync ios
+
+      - name: Build iOS application
+        script: |
+          xcode-project build-ipa \
+            --project "$CM_BUILD_DIR/ios/App/App.xcodeproj" \
+            --scheme "App"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
